@@ -1,7 +1,9 @@
+DIAMANTE, CORAZONES, PICA, TREVOL = "diamante", "corazones", "pica", "trevol"
+
 class Jugador:
 	def __init__(self, nombre):
 		self.nombre = nombre
-		self.cartas = 0
+		self.mano = Mano()
 		self.puntos = 0
 
 	def limpiar_mano(self):
@@ -14,7 +16,7 @@ class Jugador:
 		"""
 		Recibe una carta del tipo Carta y la suma a su mano
 		"""
-		self.cartas 
+		self.mano.agregar_carta(carta)
 
 	def sumar_puntos(self, puntos):
 		"""
@@ -35,7 +37,11 @@ class Juego:
 			self.jugadores[jugador] = Jugador(jugador)
 
 	def repartir(self):
-		"""Reparte self.ronda cartas a cada jugador"""
+		"""
+		Reparte self.ronda cartas a cada jugador
+		"""
+		for jugador in self.jugadores:
+			jugador.
 
 
 	def siguiente_ronda(self):
@@ -45,19 +51,18 @@ class Juego:
 		self.ronda.avanzar()
 
 class Carta:
-	def __init__(self):
+	def __init__(self, numero, palo):
+		self.palo = palo
+		self.numero = numero
 
 class Mano:
 	def __init__(self):
 		self.cartas = {}
 
-	def repartir(self, numero_cartas):
-		for i in range(numero_cartas):
-
-	def puntos(self, palo):
+	def agregar_carta(self, carta):
 		"""
-		Recibido el palo devuelve la cantidad de cartas de dicho palo
-		"""
+		Agrega una carta a la mano
+		"""	
 
 class Ronda:
 	def __init__(self):
@@ -66,11 +71,15 @@ class Ronda:
 
 	def palo_ganador(self, palo):
 		"""
+		Recibe un palo entre CORAZONES, DIAMANTE, PICA, TREVOL y lo asigna al palo ganador 
 		"""
+		self.palo = palo
 
 	def avanzar(self):
+		"""
+		Avanza a la siguiente ronda
+		"""
 		self.ronda += 1
-
 
 def crear_juego(jugadores):
 	"""
