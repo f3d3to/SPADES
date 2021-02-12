@@ -1,4 +1,26 @@
-DIAMANTE, CORAZONES, PICA, TREVOL = "diamante", "corazones", "pica", "trevol"
+PALOS = "DIAMANTE", "CORAZONES", "PICA", "TREVOL" 
+CARTAS: 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
+
+from random import randrange
+
+class Mazo:
+	def __init__(self):
+		"""
+		Genera un mazo con todas las cartas.
+		"""
+		self.cartas = []
+		self.cantidad = len(CARTAS) * len(PALOS)
+		for palo in PALOS:
+			for numero in CARTAS:
+				self.cartas.append(Carta(numero, palo))
+
+	def sacar_carta(self):
+		"""
+		Saca una carta del mazo al azar y la devuelve
+		"""
+		carta_random = randrange(self.cantidad)
+		self.cantidad -= 1
+		return self.cartas.pop(carta_random)
 
 class Jugador:
 	def __init__(self, nombre):
@@ -12,12 +34,6 @@ class Jugador:
 		"""
 		self.cartas = 0
 
-	def recibir_carta(self, carta):
-		"""
-		Recibe una carta del tipo Carta y la suma a su mano
-		"""
-		self.mano.agregar_carta(carta)
-
 	def sumar_puntos(self, puntos):
 		"""
 		Recibe puntos (int) y los suma
@@ -28,21 +44,21 @@ class Juego:
 	def __init__(self, jugadores):
 		"""
 		Recibe una lista jugadores, y le da los siguientes atributos:
-		Crea un atributo self.ronda del objeto tipo Ronda
-		Crea un atributo self.jugadores el cual es un diccionario con clave 
+		self.ronda del objeto tipo Ronda
+		self.jugadores el cual es un diccionario con claves de nombre y valores un objeto del tipo Jugador()
 		"""
 		self.ronda = Ronda()
 		self.jugadores = {}
 		for jugador in jugadores:
 			self.jugadores[jugador] = Jugador(jugador)
 
-	def repartir(self):
+	def repartir(self, mazo):
 		"""
-		Reparte self.ronda cartas a cada jugador
+		Reparte self.ronda cartas a cada jugador descontandolas del mazo recibido
 		"""
 		for jugador in self.jugadores:
-			jugador.
-
+			for i in range(self.ronda):
+				jugador.mano.agregar_carta(mazo.sacar_carta())
 
 	def siguiente_ronda(self):
 		"""
