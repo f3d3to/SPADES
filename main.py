@@ -7,7 +7,6 @@ def juego_mostrar(juego):
     """
     interfaz_grafica.dibujar_fondo()
     interfaz_grafica.mostrar_cartas(juego)
-    interfaz_grafica.dibujar_avatars(juego)
     interfaz_grafica.mostrar_puntajes(juego)
 
 def pedir_apuestas(juego):
@@ -67,7 +66,14 @@ def main():
         if ev.type == gamelib.EventType.ButtonPress:
             # El usuario presionó un botón del mouse
             x, y = ev.x, ev.y # averiguamos la posición donde se hizo click
-            #x, y = pixel_a_cartesiano(x, y)
-            if posicion_valida(x, y): #Aca comprobaria si selecciono una carta el jugador actual, si selecciona una carta:
-                juego = juego_actualizar(Carta)
             
+            if not numero_vuelta:
+                juego = spades.pedir_apuesta(juego) (cambia turno)
+                gamelib say siguiente persona
+                si todos apostaron se cambia vuelta a primera 1
+
+            elif interfaz_grafica.posicion_valida(x, y): #Aca comprobaria si selecciono una carta el jugador actual, si selecciona una carta:
+                juego = spades.tirar_carta(carta)
+
+            elif spades.juego.cantidad_cartas_mesa == spades jugadores:
+                juego = spades.juego_actualizar(juego)
