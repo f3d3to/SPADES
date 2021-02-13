@@ -16,30 +16,11 @@ def pedir_apuestas(juego):
     """
     pass
 
-#VER, este era el consejo
-def main():
-    juego = crear_juego()
-    while not juego.terminado():
-        juego_mostrar(juego)
-        spades.mezclar_mazo() #este para mi no sirve si el mazo no tenemos que mezclarlo, sacamos un random de nuestra lista y listo.
-        spades.repartir_cartas()
-        spades.pedir_apuestas()
-        while not juego.ronda_terminada():
-            mostrar_estado_juego(juego)
-            for jugador in juego.jugadores():
-                jugador.pedir_jugada()
-            juego.determinar_ganador_mano()
-        juego.contabilizar_puntos_ronda()
-    mostrar_ganador(juego)
-
-
 def no_es_numero_correcto(numero):
     """
     Ingresado un numero, verifica si es un numero entre 2 y 4. Devuelve True en caso correcto, False en caso contrario.
     """
-    if numero not in ["2", "3", "4"]:
-        return False
-    return True
+    return numero in ["2", "3", "4"]
 
 def juego_nuevo():
     """
