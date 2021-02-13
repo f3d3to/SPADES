@@ -1,4 +1,6 @@
 import gamelib
+import spades
+
 
 ANCHO = 100
 LARGO = 700
@@ -13,14 +15,36 @@ def mostrar_estado_juego():
 def mostrar_ganador():
     pass
 
+
+
+def sel_img_carta(carta):
+    """
+    Recibe una carta y devuelve su imagen.
+    """
+    
+    
+
+    return 
+
+def mostrar_cartas():
+    """ 
+    Dibuja por pantalla las cartas.
+    """
+    
+    gamelib.draw_image(f"/img/{sel_img_carta(carta)}.gif", x, y)
+
+    #for cartas in Mano:
+
+
 ### MOSTRAR ESTADO DE JUEGO.
-def p():
+def mostrar_estado_juego(juego)():
     """
     Dibuja el estdao
     """
     gamelib.resize(ANCHO, LARGO)
     while gamelib.loop():
         gamelib.draw_begin()
+        mostrar_cartas()
         gamelib.draw_end()
         for event in gamelib.get_events():
             if not event:
