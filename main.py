@@ -17,18 +17,3 @@ def main():
             juego.determinar_ganador_mano()
         juego.contabilizar_puntos_ronda()
     mostrar_ganador(juego)
-
-
-
-## CLASES
-"""
-MAZO --> ¿? REPARTIDO|
-CARTAS
-CARTA_PRINCIPAL
-TURNOS
-JUGADOR
-PUNTAJE
-"""
-## ESTADO DE JUEGO
-
-## INTERFAZ GRAFICA --> IMAGENES ¿ROTADAS?
