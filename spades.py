@@ -1,6 +1,6 @@
 
 PALOS = "D", "C", "P", "T" 
-CARTAS: 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
+CARTAS = 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
 
 from random import randrange
 
@@ -107,26 +107,46 @@ def crear_juego(jugadores):
 	return Juego(jugadores)
 
 def mezclar_mazo():
+	"""
+	Recibe un mazo ordenado y lo devuelve mezclado.
+	"""
+
 	pass
 
 def repartir_cartas():
+	"""
+	Recibe un mazo.
+	Devuelve un estado de juego nuevo.
+	"""
 	pass
 
 def pedir_apuestas():
-	pass
+	"""
+	"""
 
-def contabilizar_puntos_ronda():
 	pass
 
 def determinar_ganador_mano():
+	"""
+	"""
+
+def contabilizar_puntos_ronda(juego):
+	"""
+	Recibe un estado de juego.
+
+	"""
 	pass
 
 def ronda_terminada():
+	"""
+	Recibe un estado de juego.
+	Devuelve si el juego esta terminado.
+	"""
 	pass
 
 def siguiente_ronda(juego):
 	"""
-	Recibe un estado de juego del tipo Juego
-	Avanza de ronda y devuelve el nuevo estado de juego
+	Recibe un estado de juego del tipo Juego.
+	Avanza de ronda y devuelve el nuevo estado de juego.
 	"""
 	return juego.siguiente_ronda()
