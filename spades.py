@@ -4,6 +4,8 @@ CARTAS = 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
 
 from random import randrange
 
+
+
 class Mazo:
 	def __init__(self):
 		"""
@@ -105,13 +107,6 @@ def crear_juego(jugadores):
 	Recibe una lista con cada nombre de jugador y crea y devuelve un nuevo estado de juego del tipo Juego.
 	"""
 	return Juego(jugadores)
-
-def mezclar_mazo():
-	"""
-	Recibe un mazo ordenado y lo devuelve mezclado.
-	"""
-
-	pass
 
 def repartir_cartas():
 	"""
