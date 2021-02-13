@@ -9,6 +9,26 @@ class Jugador:
 		self.nombre = nombre
 		self.mano = []
 		self.puntos = 0
+		self.apuesta = 0
+		self.bazas = 0
+		
+	def sumar_bazas(self):
+		"""
+		Suma una baza
+		"""
+		self.bazas += 1
+	
+	def reiniciar_bazas(self):
+		"""
+		Reinicia las bazas a 0
+		"""
+		self.bazas = 0
+		
+	def asignar_apuesta(self, apuesta):
+		"""
+		Recibida una apuesta la asigna a self.apuesta
+		"""
+		self.apuesta = apuesta
 
 	def limpiar_mano(self):
 		"""
@@ -43,7 +63,10 @@ class Juego:
 		self.jugadores el cual es un diccionario con claves de nombre y valores un objeto del tipo Jugador()
 		"""
 		self.ronda = Ronda()
-		self.jugadores = {}
+		self.jugadores = []
+		#hacer diccionario con siguiente turno
+		primer_jugador = jugadores[randrange(len(jugadores)-1)]
+		self.turno_actual = self.primer_jugador = primer_jugador
 		for jugador in jugadores:
 			self.jugadores[jugador] = Jugador(jugador)
 
@@ -59,24 +82,14 @@ class Juego:
 		"""
 		Avanza a la siguiente ronda
 		"""
+		primer_jugador = siguiente_turno[primer_jugador]
 		self.ronda.avanzar()
 
 class Carta:
 	def __init__(self, numero, palo):
 		self.palo = palo
 		self.numero = numero
-		self.descubierta = False
-		self.triunfo = False
-
-class Mano:
-	def __init__(self):
-		self.cartas = {}
-
-	def agregar_carta(self, carta):
-		"""
-		Agrega una carta a la mano
-		"""	
-
+		
 class Ronda:
 	def __init__(self):
 		self.ronda = 1
@@ -94,6 +107,13 @@ class Ronda:
 		"""
 		self.ronda += 1
 
+def tirar_carta(juego, carta):
+	"""
+	Recibido un esto de juego y una carta, tira la carta en la mesa 
+	"""
+	
+		
+		
 def crear_juego(jugadores):
 	"""
 	Recibe una lista con cada nombre de jugador y crea y devuelve un nuevo estado de juego del tipo Juego.
