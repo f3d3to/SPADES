@@ -43,7 +43,7 @@ def dibujar_cartas_tapadas(juego):
     Recibido un estado de juego, dibuja las cartas tapadas de los jugadores de los cuales no es el turno actual.
     """
     for jugador in juego.jugadores:
-        if no es turno de jugador:
+        if not is turno de jugador:
             for _ in range(cantidad de cartas)
                 dibujar_carta_tapada(posicion, )
 
@@ -66,10 +66,6 @@ def mostrar_cartas(juego):
     """
     dibujar_cartas_turno(juego)
     dibujar_cartas_tapadas(juego)
-
-    # gamelib.draw_image(f"/img/{sel_img_carta(carta)}.gif", x, y)
-
-    #for cartas in Mano:
     pass
 
 def mostrar_ganador():
@@ -83,23 +79,3 @@ def mostrar_puntajes():
     Muestra los puntajes de cada jugador en pantalla ()
     """
     pass
-
-def mostrar_juego():
-    pass
-
-### MOSTRAR ESTADO DE JUEGO.
-def mostrar_estado_juego(juego):
-    """
-    Dibuja el estado de juego.
-    """
-    gamelib.resize(ANCHO, LARGO)
-    while gamelib.loop():
-        gamelib.draw_begin()
-        # mostrar_cartas()
-        gamelib.draw_end()
-        for event in gamelib.get_events():
-            if not event:
-              break
-            if event.type == gamelib.EventType.KeyPress:
-              tecla = event.key
-    gamelib.init()
