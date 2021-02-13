@@ -9,6 +9,8 @@ def sel_img_carta(carta):
     """
     Recibe una carta y devuelve su imagen.
     """
+
+    
     pass
 
 def mostrar_cartas(Mano):
