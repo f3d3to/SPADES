@@ -12,7 +12,7 @@ def main():
         juego.pedir_apuestas()
         while not juego.ronda_terminada():
             mostrar_estado_juego(juego)
-            for jugador un juego.jugadores():
+            for jugador in juego.jugadores():
                 jugador.pedir_jugada()
             juego.determinar_ganador_mano()
         juego.contabilizar_puntos_ronda()

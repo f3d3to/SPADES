@@ -106,13 +106,6 @@ def crear_juego(jugadores):
 	"""
 	return Juego(jugadores)
 
-def siguiente_ronda(juego):
-	"""
-	Recibe un estado de juego del tipo Juego
-	Avanza de ronda y devuelve el nuevo estado de juego
-	"""
-	return juego.siguiente_ronda()
-
 def mezclar_mazo():
 	pass
 
@@ -122,8 +115,18 @@ def repartir_cartas():
 def pedir_apuestas():
 	pass
 
+def contabilizar_puntos_ronda():
+	pass
+
+def determinar_ganador_mano():
+	pass
+
 def ronda_terminada():
 	pass
 
-
-
+def siguiente_ronda(juego):
+	"""
+	Recibe un estado de juego del tipo Juego
+	Avanza de ronda y devuelve el nuevo estado de juego
+	"""
+	return juego.siguiente_ronda()
