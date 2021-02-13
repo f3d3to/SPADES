@@ -5,13 +5,6 @@ import spades
 ANCHO = 100
 LARGO = 700
 
-
-def mostrar_estado_juego():
-    """
-    Recibe un estado de juego y
-    """
-    pass
-
 def mostrar_ganador():
     pass
 
@@ -35,6 +28,11 @@ def mostrar_cartas():
 
     #for cartas in Mano:
 
+def mostrar_puntajes():
+    pass
+
+def mostrar_juego():
+    pass
 
 ### MOSTRAR ESTADO DE JUEGO.
 def mostrar_estado_juego(juego)():
