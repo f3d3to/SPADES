@@ -1,4 +1,5 @@
-PALOS = "DIAMANTE", "CORAZONES", "PICA", "TREVOL" 
+
+PALOS = "D", "C", "P", "T" 
 CARTAS: 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
 
 from random import randrange
@@ -70,6 +71,8 @@ class Carta:
 	def __init__(self, numero, palo):
 		self.palo = palo
 		self.numero = numero
+		self.descubierta = False
+		self.triunfo = False
 
 class Mano:
 	def __init__(self):
@@ -109,3 +112,18 @@ def siguiente_ronda(juego):
 	Avanza de ronda y devuelve el nuevo estado de juego
 	"""
 	return juego.siguiente_ronda()
+
+def mezclar_mazo():
+	pass
+
+def repartir_cartas():
+	pass
+
+def pedir_apuestas():
+	pass
+
+def ronda_terminada():
+	pass
+
+
+
