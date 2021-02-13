@@ -11,6 +11,7 @@ class Jugador:
 		self.puntos = 0
 		self.apuesta = 0
 		self.bazas = 0
+		self.carta_tirada = None
 		
 	def sumar_bazas(self):
 		"""
@@ -75,7 +76,7 @@ class Juego:
 		Reparte self.ronda cartas a cada jugador descontandolas del mazo recibido
 		"""
 		for jugador in self.jugadores:
-			for i in range(self.ronda):
+			for i in range(self.ronda.numero_ronda):
 				jugador.mano.agregar_carta(mazo.sacar_carta())
 
 	def siguiente_ronda(self):
@@ -92,14 +93,14 @@ class Carta:
 		
 class Ronda:
 	def __init__(self):
-		self.ronda = 1
-		self.palo = None
+		self.numero_ronda = 0
+		self.palo_triunfo = None
 
-	def palo_ganador(self, palo):
+	def palo_ganador(self, palo_triunfo):
 		"""
 		Recibe un palo entre CORAZONES, DIAMANTE, PICA, TREVOL y lo asigna al palo ganador 
 		"""
-		self.palo = palo
+		self.palo_triunfo = palo_triunfo
 
 	def avanzar(self):
 		"""
@@ -107,30 +108,63 @@ class Ronda:
 		"""
 		self.ronda += 1
 
-def tirar_carta(juego, carta):
+class Vuelta:
+	def __init__(self, palo_mesa):
+		self.palo_mesa = palo_mesa
+		self.ganador_vuelta = None
+		self.numero_vuelta = 1
+
+def juego_actualizar(juego):
+	juego = vuelta(juego)
+	if numero vueltas == numero ronda:
+		juego = avanzar_ronda(juego)
+	return avanzar_vuelta(juego)
+
+def avanzar_ronda(juego):
+	reinicia vuelta a 0
+	śuma bazas
+	verifica apuesta y reiniciamos apuesta
+	cambia ronda
+	reinicia mazo
+	cambia primer turno
+	juego, mazo_sobrante = repartir_cartas(juego, MAZO_TOTAL)
+	cambia palo triunfo 
+		(si es la ronda 13 es corazones)
+		juego = carta_triunfo(juego, mazo_sobrante)
+	return juego
+
+def carta_triunfo(mazo):
 	"""
-	Recibido un esto de juego y una carta, tira la carta en la mesa 
+	Recibido un estado de juego y un mazo sobrante (lista de Cartas), saca una al azar y actualiza la carta triunfo del estado de juego
 	"""
-	
-		
-		
+	return juego
+
+def avanzar_vuelta(juego):
+	avanza vuelta
+
+def pedir_apuesta(juego, apuesta):
+	asignas apuesta a jugador turno actual 
+	cambias turno
+
+def vuelta(juego):
+	sumar puntajes de bazas
+	sacar cartas de la mesa
+	return juego
+
+def carta_valida(carta):
+
 def crear_juego(jugadores):
 	"""
 	Recibe una lista con cada nombre de jugador y crea y devuelve un nuevo estado de juego del tipo Juego.
 	"""
-	return Juego(jugadores)
+	juego = Juego(jugadores)
+	return repartir_cartas(juego)
 
-def repartir_cartas():
+def repartir_cartas(mazo):
 	"""
 	Recibe un mazo.
-	Devuelve un estado de juego nuevo.
+	Devuelve una tupla, (juego, mazo_sobrante)
 	"""
-	pass
-
-def pedir_apuestas():
-	"""
-	"""
-
 	pass
 
 def determinar_ganador_mano():
@@ -143,17 +177,3 @@ def contabilizar_puntos_ronda(juego):
 
 	"""
 	pass
-
-def ronda_terminada():
-	"""
-	Recibe un estado de juego.
-	Devuelve si el juego esta terminado.
-	"""
-	pass
-
-def siguiente_ronda(juego):
-	"""
-	Recibe un estado de juego del tipo Juego.
-	Avanza de ronda y devuelve el nuevo estado de juego.
-	"""
-	return juego.siguiente_ronda()
