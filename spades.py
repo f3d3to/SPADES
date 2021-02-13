@@ -4,38 +4,30 @@ CARTAS = 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
 
 from random import randrange
 
-
-
-class Mazo:
-	def __init__(self):
-		"""
-		Genera un mazo con todas las cartas.
-		"""
-		self.cartas = []
-		self.cantidad = len(CARTAS) * len(PALOS)
-		for palo in PALOS:
-			for numero in CARTAS:
-				self.cartas.append(Carta(numero, palo))
-
-	def sacar_carta(self):
-		"""
-		Saca una carta del mazo al azar y la devuelve
-		"""
-		carta_random = randrange(self.cantidad)
-		self.cantidad -= 1
-		return self.cartas.pop(carta_random)
-
 class Jugador:
 	def __init__(self, nombre):
 		self.nombre = nombre
-		self.mano = Mano()
+		self.mano = []
 		self.puntos = 0
 
 	def limpiar_mano(self):
 		"""
 		Limpia la mano de cartas
 		"""
-		self.cartas = 0
+		self.mano = []
+
+	def agregar_carta(self, carta):
+		"""
+		Recibe una carta del tipo Carta y la agrega a su mano
+		"""
+		self.mano.append(carta)
+
+	def sacar_carta(self, carta):
+		"""
+		Recibe una carta del tipo Carta y la quita de su mano, la devuelve.
+		Condicion: la carta debe estar en la mano
+		"""
+		return self.mano.remove(carta)
 
 	def sumar_puntos(self, puntos):
 		"""
