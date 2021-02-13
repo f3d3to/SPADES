@@ -9,15 +9,11 @@ def mostrar_ganador():
     pass
 
 
-
 def sel_img_carta(carta):
     """
     Recibe una carta y devuelve su imagen.
     """
-    
-    
-
-    return 
+    pass
 
 def mostrar_cartas():
     """ 
@@ -37,7 +33,7 @@ def mostrar_juego():
 ### MOSTRAR ESTADO DE JUEGO.
 def mostrar_estado_juego(juego)():
     """
-    Dibuja el estdao
+    Dibuja el estado de juego.
     """
     gamelib.resize(ANCHO, LARGO)
     while gamelib.loop():
@@ -50,5 +46,3 @@ def mostrar_estado_juego(juego)():
             if event.type == gamelib.EventType.KeyPress:
               tecla = event.key
     gamelib.init(main)
-
-p()
