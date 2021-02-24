@@ -52,7 +52,7 @@ def juego_nuevo():
         numero_jugadores = gamelib.input("INGRESE NUEVAMENTE EL NUMERO DE JUGADORES")
 
     jugadores = []
-    for _ in rannge(int(numero_jugadores))
+    for _ in rannge(int(numero_jugadores)):
         nombre = gamelib.input("INGRESE SU NOMBRE")
         while nombre == "" or nombre == None:
             gamelib.say("ERROR, DEBE INGRESAR UN NOMBRE")
@@ -92,12 +92,12 @@ def main():
                 juego = pedir_apuestas(juego)
                 gamelib.say(f"Turno finalizado!\nPresionar OK para continuar")
                 if spades.todos_apostaron(juego):
+                    juego = avanzar_vuelta(juego) #Se avanza a la vuelta 1 (primera)
 
-                si todos apostaron se cambia vuelta a primera 1
+            posicion_valida, carta = interfaz_grafica.posicion_valida(x, y, juego)
 
-            elif interfaz_grafica.posicion_valida(x, y): #Aca comprobaria si selecciono una carta el jugador actual, si selecciona una carta:
-                carta = interfaz_grafica.carta_seleccionada(x, y, juego)
+            elif posicion_valida: #Se selecciono una carta valida
                 juego = spades.tirar_carta(carta)
 
-            elif spades.juego.cantidad_cartas_mesa == spades jugadores:
+            elif len(juego.ronda.vuelta.cartas_puestas) == len(juego.jugadores):
                 juego = spades.juego_actualizar(juego)

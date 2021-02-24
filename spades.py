@@ -300,8 +300,15 @@ def carta_valida(juego, carta):
 	Recibido un estado de juego y una carta, devuelve True si la carta es valida para tirar, False si no lo es.
 	"""
 	if juego.turno_actual == juego.primer_jugador:
+		
 
+def es_mayor(juego, carta1, carta2):
+	"""
+	Recibido un estado de juego y dos cartas las compara, si carta1 es mayor a carta2 devuelve True, sino devuelve False
+	"""
+	
 
+	return carta_mayor
 
 def determinar_ganador_mano(juego):
 	"""
@@ -309,10 +316,3 @@ def determinar_ganador_mano(juego):
 	Devuelve el nombre del jugador.
 	"""
 
-
-def contabilizar_puntos_ronda(juego):
-	"""
-	Recibe un estado de juego.
-
-	"""
-	pass

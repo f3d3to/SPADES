@@ -4,8 +4,6 @@ import spades
 ALTO_VENTANA, ANCHO_VENTANA = 480, 720
 
 ORIENTACION = {1: "v", 2: "h", 3: "h"}
-RUTA_CARTA_DADA_VUELTA_HORIZONTAL = 
-RUTA_CARTA_DADA_VUELTA_VERTICAL = 
 
 ANCHO_CARTA = 103
 ALTO_CARTA = 138
@@ -123,13 +121,6 @@ def mostrar_cartas(juego):
     dibujar_cartas_tapadas(juego)
     dibujar_cartas_mesa(juego)
 
-def posicion_valida(x, y, juego):
-    """
-    Recibidas coordenadas en pixeles y un estado de juego, devuelve True si la posicion clickeada se encuentra entre las cartas de la mano, tambien verifica si la carta puede ser tirada o no.
-    """
-    turno = juego.turno_actual
-    cartas = juego.jugadores[turno].
-
 def dibujar_cartas_mesa(juego):
     """
     Recibe un estado de juego.
@@ -148,8 +139,38 @@ def dibujar_cartas_mesa(juego):
         dibujar_carta(carta, x_inicio, y_inicio)
         x_inicio += ANCHO_CARTA + separacion
 
-def i_carta_seleccionada(x, y):
+def posicion_valida(x, y, juego):
     """
-    Recibidas coordenadas en pixeles devuelve la posicion de carta que fue seleccionada (numero entero del indice de la mano)
+    Recibidas coordenadas en pixeles y un estado de juego, devuelve True si la posicion clickeada se encuentra entre las cartas de la mano, tambien verifica si la carta puede ser tirada o no.
+
+    Si la carta es valida devuelve (True, carta)
+    Si la carta no es valida, devuelve (False, None)
     """
-    
+    y_inicial = ALTO_VENTANA - ALTO_CARTA
+    y_final = ALTO_VENTANA
+    x_inicial = INICIO_UBICACION_CARTAS
+    x_final = x_inicial + (n_cartas + 1) * (ANCHO_CARTA / 2) #Nuevamente +1 porque la ultima carta se ve completa
+
+    turno = juego.turno_actual
+
+    if x_inicial < x < x_final and y_inicial < y < y_final:
+        i = i_carta_seleccionada(x, juego)
+        carta = juego.jugadores[turno].mano[i]
+        if spades.carta_valida(carta):
+            return True, carta
+
+    return False, None
+
+def i_carta_seleccionada(x, juego):
+    """
+    Recibidas coordenadas x en pixeles devuelve la posicion de carta que fue seleccionada (numero entero del indice de la mano)
+    Pre: la posicion seleccionada esta dentro del espacio de cartas.
+    """
+    x_inicial = INICIO_UBICACION_CARTAS
+    x -= x_inicial
+    return x // (ANCHO_CARTA//2)
+
+
+
+
+
