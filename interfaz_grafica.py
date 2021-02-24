@@ -7,11 +7,27 @@ VERTICAL, HORIZONTAL = "v", "h"
 RUTA_CARTA_DADA_VUELTA_HORIZONTAL = 
 RUTA_CARTA_DADA_VUELTA_VERTICAL = 
 
+ANCHO_CARTA = 103
+ALTO_CARTA = 138
+
+RUTA_PALO = {"D": "Diamond","C": "Hearts","P": "Spades","T": "Clubs"}
+
 def dibujar_fondo():
     """
     Dibuja de fondo la imagen img/fondo.gif
     """
     gamelib.draw_image('img/fondo.png')
+
+def mostrar_puntajes(juego):
+    """
+    Recibido un estado de juego, escribe los puntajes en la esquina superior izquierda.
+    No devuelve nada
+    """
+    x, y = 10, 10
+    for jugador in juego.jugadores:
+        texto = f"{jugador}: {juego.jugadores[jugador].puntos}"
+        draw_text(texto, x, y, size=12, **options)
+        x += 10
 
 def sel_img_carta(carta):
     """
@@ -19,7 +35,7 @@ def sel_img_carta(carta):
     """
     numero = carta.mano
     palo = carta.palo
-    return f"/img/{numero}{spades.PALOS[palo]}.gif"
+    return f"/img/{RUTA_PALO[palo]}_{numero}.gif"
 
 def dibujar_carta(carta, x, y):
     """
@@ -66,7 +82,6 @@ def mostrar_cartas(juego):
     """
     dibujar_cartas_turno(juego)
     dibujar_cartas_tapadas(juego)
-    pass
 
 def mostrar_ganador():
     """
@@ -74,8 +89,20 @@ def mostrar_ganador():
     """
     pass
 
-def mostrar_puntajes():
+def mostrar_puntajes(juego):
     """
     Muestra los puntajes de cada jugador en pantalla ()
     """
     pass
+
+def posicion_valida(x, y, juego):
+    """
+    Recibidas coordenadas en pixeles y un estado de juego, devuelve True si la posicion clickeada se encuentra entre las cartas de la mano, tambien verifica si la carta puede ser tirada o no.
+    """
+    turno = juego.turno_actual
+    cartas = juego.jugadores[turno].
+
+def carta_seleccionada(x, y):
+    """
+    Recibidas coordenadas en pixeles ()
+    """

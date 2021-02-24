@@ -10,7 +10,7 @@ class Jugador:
 		self.nombre = nombre
 		self.mano = []
 		self.puntos = 0
-		self.apuesta = 0
+		self.apuesta = -1
 		self.bazas = 0
 		self.carta_tirada = None
 		
@@ -20,6 +20,12 @@ class Jugador:
 		"""
 		self.bazas += 1
 	
+	def reiniciar_apuesta(self):
+		"""
+		Reinicia la puesta del jugador (-1)
+		"""
+		self.apuesta = -1
+
 	def reiniciar_bazas(self):
 		"""
 		Reinicia las bazas a 0
@@ -67,7 +73,16 @@ class Juego:
 		"""
 		self.ronda = Ronda()
 		self.jugadores = {}
-		#hacer diccionario con siguiente turno
+
+		siguiente_turno = {}
+		for i_jugador in range(jugadores): #Creo un diccionario con los siguientes turnos de cada jugador
+			if i_jugador == len(jugadores) - 1:
+				siguiente_turno[jugadores[i_jugador]] = jugadores[0]
+			else:
+				siguiente_turno[jugadores[i_jugador]] = jugadores[i_jugador+1]
+
+		self.siguiente_turno = siguiente_turno
+
 		primer_jugador = jugadores[randrange(len(jugadores)-1)]
 
 		self.turno_actual = self.primer_jugador = primer_jugador
@@ -90,12 +105,15 @@ class Juego:
 		"""
 		Avanza a la siguiente ronda, devuelve el estado de juego.
 		"""
-		primer_jugador = siguiente_turno[primer_jugador]
+		self.primer_jugador = self.siguiente_turno[primer_jugador]
 		self.ronda.avanzar()
 		return juego
 
 class Carta:
 	def __init__(self, numero, palo):
+		"""
+		Recibe numero entero y palo en formato str
+		"""
 		self.palo = palo
 		self.numero = numero
 
@@ -123,23 +141,36 @@ class Ronda:
 
 class Vuelta:
 	def __init__(self):
-		self.carta_mesa = carta_mesa
+		self.carta_mesa = None
 		self.ganador_vuelta = None
 		self.numero_vuelta = 0
-		self.cartas_mesa = {}
+		self.cartas_puestas = {}
 
 	def agregar_carta_mesa(self, carta, jugador):
+		"""
+		Agrega una carta a la mesa, al diccionaro cartas_puestas, donde usa a la carta como clave y valor al jugador. Si el diccionario esta vacio (la carta tirada es la primera de la mesa) se agrega a self.carta_mesa
+		No devuelve nada
+		"""
+		if self.cartas_puestas == {}:
+			self.carta_mesa = carta
+		self.cartas_puestas[carta] = jugador
 
 	def avanzar_vuelta(self):
+		"""
+		Avanza el numero de vuelta, reinicia todas las cartas_puestas en la mesa
+		No devuelve nada
+		"""
 		self.numero_vuelta += 1
-		self.cartas_mesa = {}
-		return juego
+		self.cartas_puestas = {}
+		self.carta_mesa = None
 
-	def primer_carta(self, carta):
-		self.carta_mesa = carta_mesa
-
-	def reinicar_vueltas(self):
+	def reiniciar_vueltas(self):
+		"""
+		Reinicia las vueltas a 0. (porque se cambio de ronda). Quita la carta mesa.
+		"""
 		self.numero_vuelta = 0
+		self.carta_mesa = None
+
 
 def repartir_cartas(juego, mazo):
 	"""
@@ -170,6 +201,8 @@ def juego_actualizar(juego):
 
 def avanzar_ronda(juego):
 	#Aca hay que verificar las apuestas y sumar esos puntos y reiniciamos apuestas
+	juego = verificar_puntuaciones(juego)
+	juego = quitar_apuestas(juego)
 
 	juego.ronda.vuelta.reiniciar_vueltas()
 	
@@ -204,19 +237,12 @@ def vuelta(juego):
 
 def tirar_carta(juego, carta):
 	"""
-	Pone la carta en mesa del jugador, cambia turno y saca dicha carta de la mano del jugador. 
+	Pone la carta en mesa del jugador, cambia turno y saca dicha carta de la mano del jugador.
+	Precondicion: la carta debe estar en la mano del jugador del turno actual. 
 	"""
-	juego.jugadores[turno_actual].mano.remove(Carta)
-
-	#aca habria que agregar la carta en la mesa, la de cada jugador
-
-	return juego
-
-def limpiar_mesa(juego):
-	"""
-	Recibido un estado de juego, limpia la mesa (saca todas las cartas que estan en la mesa de la vuelta)
-	"""
-	juego.ronda.vuelta.limpiar_mesa()
+	turno = juego.turno_actual
+	juego.jugadores[turno].mano.remove(carta)
+	juego.vuelta.agregar_carta_mesa(carta, turno)
 	return juego
 
 def carta_triunfo(juego, mazo):
@@ -227,10 +253,55 @@ def carta_triunfo(juego, mazo):
 	return juego
 
 def pedir_apuesta(juego, apuesta):
-	asignas apuesta a jugador turno actual 
-	cambias turno
+	"""
+	Recibe una apuesta int, la asigna al jugador del turno actual del juego.
+	Cambia a turno siguiente
+	Devuelve un nuevo estado de juego
+	"""
+	turno = juego.turno_actual
+	juego.jugadores[turno].apuesta = apuesta
+	juego.turno_actual = juego.siguiente_turno[turno]
+	return juego
 
-def carta_valida(carta):
+def todos_apostaron(juego):
+	"""
+	Recibido un estado de juego verifica si todos apostaron, en caso positivo devuelve True, en caso contrario, devuelve False
+	"""
+	for jugador in juego.jugadores:
+		if juego.jugadores[jugador].apuesta == -1:
+			return False
+	return True
+
+def quitar_apuestas(juego):
+	"""
+	Recibido un estado de juego reinicia todas las apuestas de los jugadores.
+	"""
+	for jugador in juego.jugadores:
+		juego.jugadores[jugador].apuesta = -1
+	return juego
+
+def verificar_puntuaciones(juego):
+	"""
+	Recibido un estado de juego verifica si algun jugador coincidio su numero de bazas. Verifica todas las puntuaciones
+	Devuelve un nuevo estado de juego
+	"""
+	ronda = juego.ronda.numero_ronda
+	for jugador in juego.jugadores:
+		apuesta = juego.jugadores[jugador].apuesta
+		bazas = juego.jugadores[jugador].bazas
+		if apuesta == bazas:
+			juego.jugadores[jugador].puntos += 10 + 5 * bazas
+			if apuesta == 0:
+				juego.jugadores[jugador].puntos += 5 * ronda
+	return juego
+
+def carta_valida(juego, carta):
+	"""
+	Recibido un estado de juego y una carta, devuelve True si la carta es valida para tirar, False si no lo es.
+	"""
+	if juego.turno_actual == juego.primer_jugador:
+
+
 
 def determinar_ganador_mano(juego):
 	"""
