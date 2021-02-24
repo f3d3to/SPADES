@@ -15,14 +15,13 @@ Jugar las Cartas
 
 En cada mano, después de que todos los jugadores hayan anunciado su apuesta, el que juegue primero jugará una de sus cartas (la que él quiera) y los demás deberán jugar una más en el mismo orden en que anunciaron su apuesta (de izquierda a derecha), y respetando las reglas siguientes:
 
-    Si el jugador al que le toca jugar una carta tuviera una del palo con que el jugador mano (el primero en jugar) inició la baza, deberá jugarla superando el valor de las que ya se hubieran jugado, de las de ese palo.
-    Si el jugador siguiente, no tuviera una carta del mismo palo con mayor valor, pero sí una de menor valor, debe jugar esa.
-    Si no tuviera ninguna carta del palo de inicio, deberá jugar un triunfo si este fuera de valor superior al de otro triunfo que hubiera echado un adversario. Si no tuviera un triunfo para superar el ya existente, pero sí tuviera de valor inferior deberá jugarlo igualmente.
-    Si no tuviera un triunfo entonces podrá jugar la carta que quisiera.
+~ Si el jugador al que le toca jugar una carta tuviera una del palo con que el jugador mano (el primero en jugar) inició la baza, deberá jugarla superando el valor de las que ya se hubieran jugado, de las de ese palo.
+~ Si el jugador siguiente, no tuviera una carta del mismo palo con mayor valor, pero sí una de menor valor, debe jugar esa.
+~ Si no tuviera ninguna carta del palo de inicio, deberá jugar un triunfo si este fuera de valor superior al de otro triunfo que hubiera echado un adversario. Si no tuviera un triunfo para superar el ya existente, pero sí tuviera de valor inferior deberá jugarlo igualmente.
+~ Si no tuviera un triunfo entonces podrá jugar la carta que quisiera.
 
 El orden de las cartas va dado según su numeración, salvo por el 1. De manera que el 2 es el que menos vale, luego el 3, etc. hasta el 10, luego la J, la Q, la K, y luego la carta de mayor valor es el 1. De manera que:
 (2 < 3 < 4 < 5 < 6 < 7 < 8 < 9 < 10 < J < Q < K < 1).
-
 
 Puntaje
 
