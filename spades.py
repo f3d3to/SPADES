@@ -1,7 +1,6 @@
 PALOS = "D", "C", "P", "T" 
 CARTAS = 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
 RONDA_FINAL = 13
-CARTA_CORAZONES = Carta("A", "C")
 
 from random import randrange
 
@@ -75,7 +74,7 @@ class Juego:
 		self.jugadores = {}
 
 		siguiente_turno = {}
-		for i_jugador in range(jugadores): #Creo un diccionario con los siguientes turnos de cada jugador
+		for i_jugador in range(len(jugadores)): #Creo un diccionario con los siguientes turnos de cada jugador
 			if i_jugador == len(jugadores) - 1:
 				siguiente_turno[jugadores[i_jugador]] = jugadores[0]
 			else:
@@ -98,7 +97,7 @@ class Juego:
 			for i in range(self.ronda.numero_ronda):
 				i_carta_random = randrange(len(mazo)-1)
 				carta_sacada = mazo.pop(i_carta_random)
-				jugador.mano.agregar_carta(carta_sacada)
+				self.jugadores[jugador].agregar_carta(carta_sacada)
 		return mazo
 
 	def siguiente_ronda(self):
@@ -119,10 +118,11 @@ class Carta:
 
 	def comparar(self, carta_triunfo, lista_de_cartas):
 		"""decide la ganadora"""
+		pass
 		
 class Ronda:
 	def __init__(self):
-		self.numero_ronda = 0
+		self.numero_ronda = 1
 		self.palo_triunfo = None
 		self.vuelta = Vuelta()
 
@@ -155,7 +155,7 @@ class Vuelta:
 			self.carta_mesa = carta
 		self.cartas_puestas[jugador] = carta
 
-	def avanzar_vuelta(self):
+	def avanzar(self):
 		"""
 		Avanza el numero de vuelta, reinicia todas las cartas_puestas en la mesa
 		No devuelve nada
@@ -172,6 +172,19 @@ class Vuelta:
 		self.carta_mesa = None
 
 
+def mazo_completo():
+	"""
+	No recibe nada, devuelve una lista de Cartas representando el mazo completo
+	"""
+	mazo = []
+
+	for numero in CARTAS:
+		for palo in PALOS:
+			mazo.append(Carta(numero, palo))
+
+	return mazo
+
+
 def repartir_cartas(juego, mazo):
 	"""
 	Recibe un mazo y un estado de juego.
@@ -184,8 +197,8 @@ def crear_juego(jugadores):
 	Recibe una lista con cada nombre de jugador y crea y devuelve un nuevo estado de juego del tipo Juego.
 	"""
 	juego = Juego(jugadores)
-	juego, mazo_sobrante = repartir_cartas(juego)
-	juego = carta_triunfo(mazo_sobrante)
+	juego, mazo_sobrante = repartir_cartas(juego, mazo_completo())
+	juego = carta_triunfo(juego, mazo_sobrante)
 	return juego
 
 def juego_actualizar(juego):
@@ -210,10 +223,11 @@ def avanzar_ronda(juego):
 
 	juego.primer_jugador = juego.siguiente_turno[primer_jugador] #Cambia al primer jugador de la ronda
 
-	juego, mazo_sobrante = repartir_cartas(juego, MAZO_COMPLETO)
+	juego, mazo_sobrante = repartir_cartas(juego, mazo_completo())
 
 	if juego.ronda.numero_ronda == RONDA_FINAL:
-		juego = carta_triunfo(juego, CARTA_CORAZONES)
+		carta_corazones = Carta("A", "C")
+		juego = carta_triunfo(juego, carta_corazones)
 	else:
 		juego = carta_triunfo(juego, mazo_sobrante)
 	return juego
@@ -223,7 +237,8 @@ def avanzar_vuelta(juego):
 	Avanza la vuelta, devuelve el nuevo estado de juego.
 	Preconodicion, las vueltas no deben superar al numero de rondas
 	"""
-	return juego.ronda.vuelta.avanzar()
+	juego.ronda.vuelta.avanzar()
+	return juego
 
 def vuelta(juego):
 	"""
@@ -243,13 +258,14 @@ def tirar_carta(juego, carta):
 	turno = juego.turno_actual
 	juego.jugadores[turno].mano.remove(carta)
 	juego.vuelta.agregar_carta_mesa(carta, turno)
+
 	return juego
 
 def carta_triunfo(juego, mazo):
 	"""
 	Recibido un estado de juego y un mazo sobrante (lista de Cartas), saca una al azar y actualiza la carta triunfo del estado de juego
 	"""
-	juego.ronda.vuelta.carta_triunfo(mazo)
+	juego.ronda.carta_triunfo(mazo)
 	return juego
 
 def pedir_apuesta(juego, apuesta):
@@ -261,6 +277,7 @@ def pedir_apuesta(juego, apuesta):
 	turno = juego.turno_actual
 	juego.jugadores[turno].apuesta = apuesta
 	juego.turno_actual = juego.siguiente_turno[turno]
+	
 	return juego
 
 def todos_apostaron(juego):
@@ -299,20 +316,34 @@ def carta_valida(juego, carta):
 	"""
 	Recibido un estado de juego y una carta, devuelve True si la carta es valida para tirar, False si no lo es.
 	"""
-	if juego.turno_actual == juego.primer_jugador:
-		
+	
+	pass
 
-def es_mayor(juego, carta1, carta2):
+def le_gana(juego, carta1, carta2):
 	"""
 	Recibido un estado de juego y dos cartas las compara, si carta1 es mayor a carta2 devuelve True, sino devuelve False
+	Aclaracion: existe la posibilidad que la carta sea la misma (ya que puede coincidir con el caso base), en ese caso devuelve false.
 	"""
-	
+	if carta1 == carta2:
+		return False
 
-	return carta_mayor
+
+
+	#return carta_mayor
+	pass
 
 def determinar_ganador_mano(juego):
 	"""
 	Recibido un estado de juego, determina quien fue el ganador de la mano.
 	Devuelve el nombre del jugador.
 	"""
+	jugador_ganador = juego.jugadores.turno_actual
+	carta_ganadora = juego.ronda.vuelta.cartas_puestas[jugador_ganador]
 
+	for jugador in juego.ronda.vuelta.cartas_puestas:
+		carta = juego.ronda.vuelta.cartas_puestas[jugador]
+		if le_gana(juego, carta, carta_ganadora):
+			carta_ganadora = carta
+			jugador_ganador = jugador
+
+	return jugador

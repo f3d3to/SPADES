@@ -1,5 +1,6 @@
 import interfaz_grafica
 import spades
+import gamelib
 
 def juego_mostrar(juego):
     """
@@ -21,7 +22,7 @@ def apuesta_valida(juego, numero):
         if c not in numeros:
             return False
     n_ronda = juego.ronda.numero_ronda
-    return 0 < int(numero) <= n_ronda
+    return 0 <= int(numero) <= n_ronda
 
 def pedir_apuestas(juego):
     """
@@ -30,7 +31,7 @@ def pedir_apuestas(juego):
     """
     player = juego.turno_actual
     apuesta = gamelib.input(f"Ingrese su apuesta {player}")
-    while not apuesta_valida(apuesta):
+    while not apuesta_valida(juego, apuesta):
         apuesta = gamelib.input(f"ERROR!\n{player}, ingrese una apuesta valida\nUn numero entre 0 y {juego.ronda.numero_ronda}")
     juego = spades.pedir_apuesta(juego, int(apuesta))
     return juego
@@ -39,7 +40,7 @@ def no_es_numero_correcto(numero):
     """
     Ingresado un numero, verifica si es un numero entre 2 y 4. Devuelve True en caso correcto, False en caso contrario.
     """
-    return numero in ["2", "3", "4"]
+    return not numero in ["2", "3", "4"]
 
 def juego_nuevo():
     """
@@ -52,7 +53,7 @@ def juego_nuevo():
         numero_jugadores = gamelib.input("INGRESE NUEVAMENTE EL NUMERO DE JUGADORES")
 
     jugadores = []
-    for _ in rannge(int(numero_jugadores)):
+    for _ in range(int(numero_jugadores)):
         nombre = gamelib.input("INGRESE SU NOMBRE")
         while nombre == "" or nombre == None:
             gamelib.say("ERROR, DEBE INGRESAR UN NOMBRE")
@@ -64,7 +65,6 @@ def juego_nuevo():
 def main():
     gamelib.title("BAZAS")
     juego = spades.crear_juego(juego_nuevo())
-
     gamelib.resize(interfaz_grafica.ANCHO_VENTANA, interfaz_grafica.
         ALTO_VENTANA)
 
@@ -92,12 +92,13 @@ def main():
                 juego = pedir_apuestas(juego)
                 gamelib.say(f"Turno finalizado!\nPresionar OK para continuar")
                 if spades.todos_apostaron(juego):
-                    juego = avanzar_vuelta(juego) #Se avanza a la vuelta 1 (primera)
+                    juego = spades.avanzar_vuelta(juego) #Se avanza a la vuelta 1 (primera)
 
-            posicion_valida, carta = interfaz_grafica.posicion_valida(x, y, juego)
-
-            elif posicion_valida: #Se selecciono una carta valida
+            elif interfaz_grafica.posicion_valida(x, y, juego): #Se selecciono una carta valida
+                carta = interfaz_grafica.carta_seleccionada(x, y, juego)
                 juego = spades.tirar_carta(carta)
 
             elif len(juego.ronda.vuelta.cartas_puestas) == len(juego.jugadores):
                 juego = spades.juego_actualizar(juego)
+
+gamelib.init(main)

@@ -1,7 +1,7 @@
 import gamelib
 import spades
 
-ALTO_VENTANA, ANCHO_VENTANA = 480, 720
+ALTO_VENTANA, ANCHO_VENTANA = 600, 1000
 
 ORIENTACION = {1: "v", 2: "h", 3: "h"}
 
@@ -17,7 +17,7 @@ def dibujar_fondo():
     """
     Dibuja de fondo la imagen img/fondo.gif
     """
-    gamelib.draw_image('img/fondo.gif')
+    gamelib.draw_image("img/fondo.gif", 0, 0)
 
 def mostrar_puntajes(juego):
     """
@@ -27,7 +27,7 @@ def mostrar_puntajes(juego):
     x = y = SEPARACION_TEXTOS
     for jugador in juego.jugadores:
         texto = f"{jugador}: {juego.jugadores[jugador].puntos}"
-        draw_text(texto, x, y, size=12)
+        gamelib.draw_text(texto, x, y, size=12)
         x += SEPARACION_TEXTOS
 
 def mostrar_turnos(juego):
@@ -35,20 +35,20 @@ def mostrar_turnos(juego):
     Recibido un estado de juego, muestra el turno actual y el siguiente en la esquina inferior derecha
     """
     turno_actual = juego.turno_actual 
-    siguiente_turno = juego.siguiente_turno[turno_actual]
+    turno_siguiente = juego.siguiente_turno[turno_actual]
     x_texto_actual = ALTO_VENTANA - SEPARACION_TEXTOS
     x_texto_siguiente = x_texto_actual - SEPARACION_TEXTOS
     y = SEPARACION_TEXTOS
-    draw_text(f"Turno actual: {turno_actual}", x_texto_actual, y, size=12)
-    draw_text(f"Turno siguiente: {turno_siguiente}", x_texto_siguiente, y, size=12)
+    gamelib.draw_text(f"Turno actual: {turno_actual}", x_texto_actual, y, size=12)
+    gamelib.draw_text(f"Turno siguiente: {turno_siguiente}", x_texto_siguiente, y, size=12)
 
 def sel_img_carta(carta):
     """
     Recibe una carta y devuelve su imagen (la ubicacion en str).
     """
-    numero = carta.mano
+    numero = carta.numero
     palo = carta.palo
-    return f"/img/{RUTA_PALO[palo]}_{numero}.gif"
+    return f"img/{RUTA_PALO[palo]}_{numero}.gif"
 
 def dibujar_carta(carta, x, y):
     """
@@ -70,7 +70,7 @@ def dibujar_mano_tapada(n_posicion, jugador, juego):
         y_inicial = 0
 
         for _ in range(n_cartas):
-            gamelib.draw_image(f"/img/Back_Red_1_{ORIENTACION[n_posicion]}", x_inicial, y_inicial)
+            gamelib.draw_image(f"img/Back_Red_1_{ORIENTACION[n_posicion]}.gif", x_inicial, y_inicial)
             x_inicial += separacion
 
     else:
@@ -78,12 +78,12 @@ def dibujar_mano_tapada(n_posicion, jugador, juego):
         y_inicial = (ALTO_VENTANA - (n_cartas+1) * (ANCHO_CARTA/3) * 2) // 2
 
         if n_posicion == 2:
-            x_inicial = ANCHO_VENTANA - LARGO_CARTA
+            x_inicial = ANCHO_VENTANA - ALTO_CARTA
         if n_posicion == 3:
             x_inicial = 0
 
         for _ in range(n_cartas):
-            gamelib.draw_image(f"/img/Back_Red_1_{ORIENTACION[n_posicion]}", x_inicial, y_inicial)
+            gamelib.draw_image(f"/img/Back_Red_1_{ORIENTACION[n_posicion]}.gif", x_inicial, y_inicial)
             y_inicial += separacion
 
 def dibujar_cartas_tapadas(juego):
@@ -97,15 +97,16 @@ def dibujar_cartas_tapadas(juego):
     for jugador in juego.jugadores:
         if jugador != turno:
             n_jugador += 1
-            dibujar_mano_tapada(n_jugador, jugador)
+            dibujar_mano_tapada(n_jugador, jugador, juego)
 
 def dibujar_cartas_turno(juego):
     """
     Recibido un estado de juego, dibuja las cartas del jugador actual.
     """
-    inicio_vertical = ALTO_VENTANA - LARGO_CARTA
+    inicio_vertical = ALTO_VENTANA - ALTO_CARTA
     inicio_horizontal = INICIO_UBICACION_CARTAS
     separacion = ANCHO_CARTA // 2
+    
     turno = juego.turno_actual
 
     for carta in juego.jugadores[turno].mano:
@@ -142,10 +143,10 @@ def dibujar_cartas_mesa(juego):
 def posicion_valida(x, y, juego):
     """
     Recibidas coordenadas en pixeles y un estado de juego, devuelve True si la posicion clickeada se encuentra entre las cartas de la mano, tambien verifica si la carta puede ser tirada o no.
-
-    Si la carta es valida devuelve (True, carta)
-    Si la carta no es valida, devuelve (False, None)
     """
+    turno = juego.turno_actual
+    n_cartas = len(juego.jugadores[turno].mano)
+
     y_inicial = ALTO_VENTANA - ALTO_CARTA
     y_final = ALTO_VENTANA
     x_inicial = INICIO_UBICACION_CARTAS
@@ -154,12 +155,11 @@ def posicion_valida(x, y, juego):
     turno = juego.turno_actual
 
     if x_inicial < x < x_final and y_inicial < y < y_final:
-        i = i_carta_seleccionada(x, juego)
-        carta = juego.jugadores[turno].mano[i]
-        if spades.carta_valida(carta):
-            return True, carta
+        carta = carta_seleccionada(x, y, juego)
+        if spades.carta_valida(juego, carta):
+            return True
 
-    return False, None
+    return False
 
 def i_carta_seleccionada(x, juego):
     """
@@ -170,7 +170,13 @@ def i_carta_seleccionada(x, juego):
     x -= x_inicial
     return x // (ANCHO_CARTA//2)
 
-
+def carta_seleccionada(x, y, juego):
+    """
+    Recibidas coordeanadas x y en pixeles y un estado de juego devuelve la carta seleccionada
+    """
+    turno = juego.turno_actual
+    i = i_carta_seleccionada(x, juego)
+    return juego.jugadores[turno].mano[int(i)]
 
 
 
