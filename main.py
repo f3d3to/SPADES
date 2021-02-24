@@ -8,6 +8,7 @@ def juego_mostrar(juego):
     interfaz_grafica.dibujar_fondo()
     interfaz_grafica.mostrar_cartas(juego)
     interfaz_grafica.mostrar_puntajes(juego)
+    interfaz_grafica.mostrar_turnos(juego)
 
 def apuesta_valida(juego, numero):
     """

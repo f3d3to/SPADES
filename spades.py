@@ -153,7 +153,7 @@ class Vuelta:
 		"""
 		if self.cartas_puestas == {}:
 			self.carta_mesa = carta
-		self.cartas_puestas[carta] = jugador
+		self.cartas_puestas[jugador] = carta
 
 	def avanzar_vuelta(self):
 		"""
