@@ -123,20 +123,26 @@ class Carta:
 class Ronda:
 	def __init__(self):
 		self.numero_ronda = 1
-		self.palo_triunfo = None
+		self.carta_triunfo = -1
 		self.vuelta = Vuelta()
 
-	def carta_triunfo(self, carta_triunfo = None):
+	def carta_triunfo(self, carta_triunfo):
 		"""
-		Recibe una carta entre CORAZONES, DIAMANTE, PICA, TREVOL y lo asigna a la carta triunfo
-		Si no recibe nada, se considera que el palo ganador es CORAZONES
+		Recibe una carta y la asigna a la carta triunfo
 		"""
 		self.carta_triunfo = carta_triunfo
+
+	def no_hay_carta_triunfo(self):
+		"""
+		Si self.carta_triunfo == -1, devuelve True, en caso contrario devuelve False
+		"""
+		return self.carta_triunfo == -1
 
 	def avanzar(self):
 		"""
 		Avanza a la siguiente ronda
 		"""
+		self.carta_triunfo = -1
 		self.ronda += 1
 
 class Vuelta:
@@ -265,7 +271,8 @@ def carta_triunfo(juego, mazo):
 	"""
 	Recibido un estado de juego y un mazo sobrante (lista de Cartas), saca una al azar y actualiza la carta triunfo del estado de juego
 	"""
-	juego.ronda.carta_triunfo(mazo)
+	i_carta = randrange(len(mazo))
+	juego.ronda.carta_triunfo(mazo[i_carta])
 	return juego
 
 def pedir_apuesta(juego, apuesta):
@@ -316,7 +323,10 @@ def carta_valida(juego, carta):
 	"""
 	Recibido un estado de juego y una carta, devuelve True si la carta es valida para tirar, False si no lo es.
 	"""
-	
+	if juego.primer_jugador == juego.turno_actual: #Si es el primero en tirar
+		return True
+
+	#if juego.ronda.vuelta.carta_mesa.palo 
 	pass
 
 def le_gana(juego, carta1, carta2):

@@ -1,14 +1,15 @@
 import gamelib
 import spades
 
-ALTO_VENTANA, ANCHO_VENTANA = 600, 1000
+ALTO_VENTANA, ANCHO_VENTANA = 700, 1050
 
 ORIENTACION = {1: "v", 2: "h", 3: "h"}
 
 ANCHO_CARTA = 103
 ALTO_CARTA = 138
 INICIO_UBICACION_CARTAS = (ANCHO_VENTANA - 14 * (ANCHO_CARTA/2)) // 2 #14 y no 13, para que quede centrada ya que la ultima carta se ve completa
-SEPARACION_TEXTOS = 10
+SEPARACION_TEXTOS = 20
+COLOR_TEXTO = "cyan"
 
 RUTA_PALO = {"D": "Diamond", "C": "Hearts", "P": "Spades", "T": "Clubs"}
 
@@ -24,23 +25,29 @@ def mostrar_puntajes(juego):
     Recibido un estado de juego, escribe los puntajes en la esquina superior izquierda.
     No devuelve nada
     """
-    x = y = SEPARACION_TEXTOS
+    tamaño_letra = SEPARACION_TEXTOS // 3 * 2
+    x = y = ALTO_CARTA + SEPARACION_TEXTOS
+    gamelib.draw_text(f"PUNTAJES", x, y, size=(tamaño_letra + tamaño_letra//3), fill=COLOR_TEXTO, anchor="w")
+    y += SEPARACION_TEXTOS
+
     for jugador in juego.jugadores:
         texto = f"{jugador}: {juego.jugadores[jugador].puntos}"
-        gamelib.draw_text(texto, x, y, size=12)
-        x += SEPARACION_TEXTOS
+        gamelib.draw_text(texto, x, y, size=tamaño_letra, anchor="w", fill=COLOR_TEXTO)
+        y += SEPARACION_TEXTOS
 
 def mostrar_turnos(juego):
     """
-    Recibido un estado de juego, muestra el turno actual y el siguiente en la esquina inferior derecha
+    Recibido un estado de juego, muestra el turno actual y el siguiente en la esquina inferior izquierda
     """
-    turno_actual = juego.turno_actual 
+    tamaño_letra = SEPARACION_TEXTOS
+    turno_actual = juego.turno_actual
     turno_siguiente = juego.siguiente_turno[turno_actual]
-    x_texto_actual = ALTO_VENTANA - SEPARACION_TEXTOS
-    x_texto_siguiente = x_texto_actual - SEPARACION_TEXTOS
-    y = SEPARACION_TEXTOS
-    gamelib.draw_text(f"Turno actual: {turno_actual}", x_texto_actual, y, size=12)
-    gamelib.draw_text(f"Turno siguiente: {turno_siguiente}", x_texto_siguiente, y, size=12)
+    y_texto_actual = ALTO_VENTANA - ALTO_CARTA - SEPARACION_TEXTOS * 2 - tamaño_letra
+    y_texto_siguiente = y_texto_actual + SEPARACION_TEXTOS
+    x = ALTO_CARTA + SEPARACION_TEXTOS
+
+    gamelib.draw_text(f"Turno actual: {turno_actual}", x, y_texto_actual, size=tamaño_letra, fill=COLOR_TEXTO, anchor="w")
+    gamelib.draw_text(f"Turno siguiente: {turno_siguiente}", x, y_texto_siguiente, size=tamaño_letra, fill=COLOR_TEXTO, anchor="w")
 
 def sel_img_carta(carta):
     """
@@ -83,7 +90,7 @@ def dibujar_mano_tapada(n_posicion, jugador, juego):
             x_inicial = 0
 
         for _ in range(n_cartas):
-            gamelib.draw_image(f"/img/Back_Red_1_{ORIENTACION[n_posicion]}.gif", x_inicial, y_inicial)
+            gamelib.draw_image(f"img/Back_Red_1_{ORIENTACION[n_posicion]}.gif", x_inicial, y_inicial)
             y_inicial += separacion
 
 def dibujar_cartas_tapadas(juego):
@@ -110,7 +117,7 @@ def dibujar_cartas_turno(juego):
     turno = juego.turno_actual
 
     for carta in juego.jugadores[turno].mano:
-        dibujar_carta(carta, inicio_vertical, inicio_horizontal)
+        dibujar_carta(carta, inicio_horizontal, inicio_vertical)
         inicio_horizontal += separacion
 
 def mostrar_cartas(juego):
@@ -121,6 +128,15 @@ def mostrar_cartas(juego):
     dibujar_cartas_turno(juego)
     dibujar_cartas_tapadas(juego)
     dibujar_cartas_mesa(juego)
+    dibujar_carta_triunfo(juego)
+
+def dibujar_carta_triunfo(juego):
+    """
+    Recibido un estado de juego, si hay una carta triunfo en mesa, la dibuja.
+    """
+    if juego.ronda.no_hay_carta_triunfo():
+        return
+    dibujar_carta(juego.ronda.carta_triunfo)
 
 def dibujar_cartas_mesa(juego):
     """
@@ -146,7 +162,7 @@ def posicion_valida(x, y, juego):
     """
     turno = juego.turno_actual
     n_cartas = len(juego.jugadores[turno].mano)
-
+    print("tengo cartas", n_cartas)
     y_inicial = ALTO_VENTANA - ALTO_CARTA
     y_final = ALTO_VENTANA
     x_inicial = INICIO_UBICACION_CARTAS
@@ -168,7 +184,7 @@ def i_carta_seleccionada(x, juego):
     """
     x_inicial = INICIO_UBICACION_CARTAS
     x -= x_inicial
-    return x // (ANCHO_CARTA//2)
+    return x // (ANCHO_CARTA//2) - 1
 
 def carta_seleccionada(x, y, juego):
     """
@@ -177,6 +193,3 @@ def carta_seleccionada(x, y, juego):
     turno = juego.turno_actual
     i = i_carta_seleccionada(x, juego)
     return juego.jugadores[turno].mano[int(i)]
-
-
-

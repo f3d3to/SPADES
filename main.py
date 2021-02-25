@@ -15,13 +15,28 @@ def apuesta_valida(juego, numero):
     """
     Verifica que un numero sea una apuesta valida. Siendo el numero necesario un numero entre 0 y numero_ronda
     """
-    if numero == None:
+    if numero == None or numero == "":
         return False
     numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     for c in numero:
         if c not in numeros:
             return False
     n_ronda = juego.ronda.numero_ronda
+
+    turno_actual = juego.turno_actual
+    siguiente_turno = juego.siguiente_turno[turno_actual]
+    primer_jugador = juego.primer_jugador
+
+    if siguiente_turno == primer_jugador: #El turno actual es el ultimo jugador en tirar
+        apuestas_totales = 1 #Empiezo en 1 porque el default del jugador sin apostar es -1
+        print("Es el ultimo turno")
+        for jugador in juego.jugadores:
+            apuestas_totales += juego.jugadores[jugador].apuesta
+        if int(numero) + apuestas_totales == juego.ronda.numero_ronda:
+            print(f"EL NUMERO RONDA ES {juego.ronda.numero_ronda}, y las apuestas totales {apuestas_totales}")
+            gamelib.say("Error, las apuestas totales no pueden coincidir con el numero de ronda.")
+            return False
+
     return 0 <= int(numero) <= n_ronda
 
 def pedir_apuestas(juego):
@@ -97,6 +112,7 @@ def main():
             elif interfaz_grafica.posicion_valida(x, y, juego): #Se selecciono una carta valida
                 carta = interfaz_grafica.carta_seleccionada(x, y, juego)
                 juego = spades.tirar_carta(carta)
+                print("SI, SELECCIONASTE U NA CARTA VALIDA")
 
             elif len(juego.ronda.vuelta.cartas_puestas) == len(juego.jugadores):
                 juego = spades.juego_actualizar(juego)
