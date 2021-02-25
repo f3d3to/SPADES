@@ -2,6 +2,7 @@ PALOS = "D", "C", "P", "T"
 CARTAS = 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
 RONDA_FINAL = 13
 
+import gamelib
 from random import randrange
 
 class Jugador:
@@ -11,7 +12,6 @@ class Jugador:
 		self.puntos = 0
 		self.apuesta = -1
 		self.bazas = 0
-		self.carta_tirada = None
 		
 	def sumar_bazas(self):
 		"""
@@ -109,7 +109,7 @@ class Juego:
 		return juego
 
 class Carta:
-	def __init__(self, numero, palo):
+	def __init__(self, numero=None, palo=None):
 		"""
 		Recibe numero entero y palo en formato str
 		"""
@@ -118,7 +118,7 @@ class Carta:
 
 	def es_mayor(self, otra):
 		"""
-		Recibida otra carta, devuelve True si self > otra y False si self < otra (hablando de los numeros ordenados segun a lista global CARTAS)
+		Recibida otra carta, devuelve True si self > otra y False si self < otra (hablando de los numeros ordenados segun la lista global CARTAS)
 		"""
 		i_self = 0
 		i_otra = 0
@@ -127,8 +127,13 @@ class Carta:
 				i_self = i
 			if otra.numero == CARTAS[i]:
 				i_otra = i
-			if i_self != 0 and i_otra != 0: #Para que no siga iterando si ya encontro las cartas
-				return i_self > i_otra
+		return i_self > i_otra
+
+	def carta_nula(self):
+		"""
+		Verifica si una carta es nula, es decir si su palo y numero son None
+		"""
+		return self.palo == None and self.numero == None
 
 	def __eq__(self, otra):
 		"""
@@ -145,7 +150,7 @@ class Carta:
 class Ronda:
 	def __init__(self):
 		self.numero_ronda = 1
-		self.carta_triunfo = -1
+		self.carta_triunfo = Carta()
 		self.vuelta = Vuelta()
 
 	def asignar_carta_triunfo(self, carta_triunfo):
@@ -158,18 +163,18 @@ class Ronda:
 		"""
 		Si self.carta_triunfo == -1, devuelve True, en caso contrario devuelve False
 		"""
-		return self.carta_triunfo == -1
+		return self.carta_triunfo.carta_nula()
 
 	def avanzar(self):
 		"""
 		Avanza a la siguiente ronda
 		"""
-		self.carta_triunfo = -1
-		self.ronda += 1
+		self.carta_triunfo = Carta()
+		self.numero_ronda += 1
 
 class Vuelta:
 	def __init__(self):
-		self.carta_mesa = None
+		self.carta_mesa = Carta()
 		self.ganador_vuelta = None
 		self.numero_vuelta = 0
 		self.cartas_puestas = {}
@@ -179,7 +184,7 @@ class Vuelta:
 		Agrega una carta a la mesa, al diccionaro cartas_puestas, donde usa a la carta como clave y valor al jugador. Si el diccionario esta vacio (la carta tirada es la primera de la mesa) se agrega a self.carta_mesa
 		No devuelve nada
 		"""
-		if self.cartas_puestas == {}:
+		if self.carta_mesa.carta_nula():
 			self.carta_mesa = carta
 		self.cartas_puestas[jugador] = carta
 
@@ -190,14 +195,20 @@ class Vuelta:
 		"""
 		self.numero_vuelta += 1
 		self.cartas_puestas = {}
-		self.carta_mesa = None
+		self.carta_mesa = Carta()
+
+	def mesa_vacia(self):
+		"""
+		Devuelve True si no hay cartas en la mesa, si hay cartas devuelve False
+		"""
+		return not len(self.cartas_puestas)
 
 	def reiniciar_vueltas(self):
 		"""
 		Reinicia las vueltas a 0. (porque se cambio de ronda). Quita la carta mesa.
 		"""
 		self.numero_vuelta = 0
-		self.carta_mesa = None
+		self.carta_mesa = Carta()
 
 
 def mazo_completo():
@@ -240,6 +251,14 @@ def juego_actualizar(juego):
 		return avanzar_ronda(juego)
 	return avanzar_vuelta(juego)
 
+def bazas_a_0(juego):
+	"""
+	Recibido un estado de juego, reinicia las bazas de todos los jugadores a 0
+	"""
+	for jugador in juego.jugadores:
+		juego.jugadores[jugador].reiniciar_bazas()
+	return juego
+
 def avanzar_ronda(juego):
 	#Aca hay que verificar las apuestas y sumar esos puntos y reiniciamos apuestas
 	juego = verificar_puntuaciones(juego)
@@ -247,6 +266,8 @@ def avanzar_ronda(juego):
 
 	juego.ronda.vuelta.reiniciar_vueltas()
 	
+	juego = bazas_a_0(juego)
+
 	juego.ronda.avanzar()
 
 	juego.primer_jugador = juego.siguiente_turno[juego.primer_jugador] #Cambia al primer jugador de la ronda
@@ -275,12 +296,15 @@ def vuelta(juego):
 	Aclaracion: No avanza la vuelta, eso lo hace la funcion avanzar_vuelta(juego)
 	"""
 	jugador_ganador = determinar_ganador_mano(juego)
+	gamelib.say(f"EL GANADOR DE LA BAZA FUE\n{jugador_ganador}")
 	juego.jugadores[jugador_ganador].sumar_bazas()
+	juego.turno_actual = jugador_ganador
 	return juego
 
 def tirar_carta(juego, carta):
 	"""
 	Pone la carta en mesa del jugador, cambia turno y saca dicha carta de la mano del jugador.
+	Si es el primer turno, la carta se agrega al atributo de la vuelta del juego carta_mesa
 	Precondicion: la carta debe estar en la mano del jugador del turno actual. 
 	"""
 	turno_actual = juego.turno_actual
@@ -366,7 +390,7 @@ def tiene_carta_mesa(juego):
 	"""
 	turno_actual = juego.turno_actual
 	for carta in juego.jugadores[turno_actual].mano:
-		if carta.palo == juego.ronda.vuelta.carta_mesa.palo:
+		if carta.mismo_palo(juego.ronda.vuelta.carta_mesa):
 			return True
 	return False
 
@@ -376,9 +400,20 @@ def tiene_carta_triunfo(juego):
 	"""
 	turno_actual = juego.turno_actual
 	for carta in juego.jugadores[turno_actual].mano:
-		if carta.palo == juego.ronda.carta_triunfo.palo:
+		if carta.mismo_palo(juego.ronda.carta_triunfo):
 			return True
 	return False
+
+def carta_mayor_palo(juego, carta):
+	"""
+	Recibido un estado de juego, devuelve True si la carta elegida es la mayor del palo en la mano
+	"""
+	turno_actual = juego.turno_actual
+	for c in juego.jugadores[turno_actual].mano:
+		if carta.mismo_palo(c):
+			if c.es_mayor(carta):
+				return False
+	return True
 
 def carta_valida(juego, carta):
 	"""
@@ -386,11 +421,23 @@ def carta_valida(juego, carta):
 	"""
 	turno_actual = juego.turno_actual
 	n_cartas_mano = len(juego.jugadores[turno_actual].mano)
-	if juego.primer_jugador == juego.turno_actual or n_cartas_mano == 1: #Si es el primero en tirar
+	if juego.ronda.vuelta.mesa_vacia(): #Si es el primero en tirar
 		return True
 
-	if not carta.mismo_palo(juego.ronda.vuelta.carta_mesa) and not tiene_carta_mesa(juego):
-		if not carta.mismo_palo(juego.ronda.carta_triunfo) and not tiene_carta_triunfo(juego):
+	carta_apertura = juego.ronda.vuelta.carta_mesa 
+	carta_triunfo = juego.ronda.carta_triunfo
+
+	if carta.mismo_palo(carta_apertura):
+		if carta_mayor_palo(juego, carta):
+			return True
+		return False
+
+	if not tiene_carta_mesa(juego):
+		if carta.mismo_palo(carta_triunfo):
+			if carta_mayor_palo(juego, carta):
+				return True
+			return False
+		if not tiene_carta_triunfo(juego):
 			return True
 
 	return False
@@ -409,8 +456,20 @@ def le_gana(juego, carta1, carta2):
 	if carta1.palo == palo_triunfo:
 		if carta2.palo == palo_triunfo:
 			return carta1.es_mayor(carta2)
-		else:
+		return True
+
+	if carta1.palo == palo_apertura:
+		if carta2.palo == palo_triunfo:
 			return False
+		if carta2.palo == palo_apertura:
+			return carta1.es_mayor(carta2)
+
+	#La carta1 es de uno de los otros dos palos
+	if carta2.palo == palo_triunfo or carta2.palo == palo_apertura:
+		return False
+
+	#La carta2 tambien es uno de los otros dos palos
+	return carta1.es_mayor(carta2)
 
 
 def determinar_ganador_mano(juego):

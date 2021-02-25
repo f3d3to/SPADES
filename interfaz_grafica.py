@@ -53,11 +53,35 @@ def mostrar_bazas(juego):
     """
     Recibido un estado de juego muestra por pantalla las bazas de cada jugador
     """
+    tamaño_letra = SEPARACION_TEXTOS // 3 * 2
+    y = ALTO_CARTA + SEPARACION_TEXTOS
+    x = ANCHO_VENTANA - ALTO_CARTA - SEPARACION_TEXTOS
+    gamelib.draw_text(f"BAZAS RONDA N°{juego.ronda.numero_ronda}", x, y, size=(tamaño_letra + tamaño_letra//3), fill=COLOR_TEXTO, anchor="e")
+    y += SEPARACION_TEXTOS
+
+    for jugador in juego.jugadores:
+        texto = f"{jugador}: {juego.jugadores[jugador].bazas}"
+        gamelib.draw_text(texto, x, y, size=tamaño_letra, anchor="e", fill=COLOR_TEXTO)
+        y += SEPARACION_TEXTOS
 
 def mostrar_apuestas(juego):
     """
     Recibido un estado de juego muestra por pantalla las apuestas de cada jugador
     """
+    tamaño_letra = SEPARACION_TEXTOS // 3 * 2
+    y = ALTO_VENTANA - ALTO_CARTA - SEPARACION_TEXTOS * 4 - tamaño_letra * 4
+    x = ANCHO_VENTANA - ALTO_CARTA - SEPARACION_TEXTOS
+    gamelib.draw_text(f"APUESTAS", x, y, size=(tamaño_letra + tamaño_letra//3), fill=COLOR_TEXTO, anchor="e")
+    y += SEPARACION_TEXTOS
+
+    for jugador in juego.jugadores:
+        if juego.jugadores[jugador].apuesta == -1:
+            apuesta = 0
+        else:
+            apuesta = juego.jugadores[jugador].apuesta
+        texto = f"{jugador}: {apuesta}"
+        gamelib.draw_text(texto, x, y, size=tamaño_letra, anchor="e", fill=COLOR_TEXTO)
+        y += SEPARACION_TEXTOS
 
 def sel_img_carta(carta):
     """
@@ -161,6 +185,7 @@ def dibujar_cartas_mesa(juego):
     Recibe un estado de juego.
     Dibuja las cartas de la mesa, 
     """
+    tamaño_letra = SEPARACION_TEXTOS // 3 * 2
     n_jugadores = len(juego.jugadores)
     separacion = 30
     ancho_total = n_jugadores * ANCHO_CARTA + (n_jugadores - 1) * separacion
@@ -170,7 +195,7 @@ def dibujar_cartas_mesa(juego):
 
     for jugador in juego.ronda.vuelta.cartas_puestas:
         carta = juego.ronda.vuelta.cartas_puestas[jugador]
-        gamelib.draw_text(jugador, x_inicio, y_inicio - separacion)
+        gamelib.draw_text(jugador, x_inicio + ANCHO_CARTA//2, y_inicio - separacion, size=tamaño_letra, anchor="center", fill=COLOR_TEXTO)
         dibujar_carta(carta, x_inicio, y_inicio)
         x_inicio += ANCHO_CARTA + separacion
 
@@ -180,7 +205,6 @@ def posicion_valida(x, y, juego):
     """
     turno = juego.turno_actual
     n_cartas = len(juego.jugadores[turno].mano)
-    print("tengo cartas", n_cartas)
     y_inicial = ALTO_VENTANA - ALTO_CARTA
     y_final = ALTO_VENTANA
     x_inicial = INICIO_UBICACION_CARTAS
@@ -202,7 +226,7 @@ def i_carta_seleccionada(x, juego):
     """
     x_inicial = INICIO_UBICACION_CARTAS
     x -= x_inicial
-    return x // (ANCHO_CARTA//2) - 1
+    return x // (ANCHO_CARTA//2)
 
 def carta_seleccionada(x, y, juego):
     """
@@ -210,4 +234,6 @@ def carta_seleccionada(x, y, juego):
     """
     turno = juego.turno_actual
     i = i_carta_seleccionada(x, juego)
+    if i == len(juego.jugadores[turno].mano): #La ultima carta se ve completa, entonces se excede
+        i -= 1
     return juego.jugadores[turno].mano[int(i)]

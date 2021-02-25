@@ -1,6 +1,7 @@
 import interfaz_grafica
 import spades
 import gamelib
+import sound
 
 def juego_mostrar(juego):
     """
@@ -58,6 +59,18 @@ def no_es_numero_correcto(numero):
     """
     return not numero in ["2", "3", "4"]
 
+def no_es_nombre_correcto(nombre, jugadores):
+    """
+    Recibido un nombre y una lista de jugadores de nombres ya ingresados, verifica que este sea correcto (que no este repetido o que no este vacio)
+    """
+    if nombre == "" or nombre == None:
+        return True
+
+    if nombre in jugadores:
+        return True
+
+    return False
+
 def juego_nuevo():
     """
     Crea un nuevo estado de juego, y pregunta a usuario cuantos jugadores van a ser y pregunta sus respectivos nombres.
@@ -71,8 +84,8 @@ def juego_nuevo():
     jugadores = []
     for _ in range(int(numero_jugadores)):
         nombre = gamelib.input("INGRESE SU NOMBRE")
-        while nombre == "" or nombre == None:
-            gamelib.say("ERROR, DEBE INGRESAR UN NOMBRE")
+        while no_es_nombre_correcto(nombre, jugadores):
+            gamelib.say("ERROR, NOMBRE INVALIDO O YA UTILIZADO")
             nombre = gamelib.input("INGRESE NUEVAMENTE SU NOMBRE")
         jugadores.append(nombre)
 
@@ -104,6 +117,15 @@ def main():
             terminar_juego(juego)
             juego = spades.crear_juego(juego_nuevo())
 
+        if not juego.ronda.vuelta.numero_vuelta: #Si la vuelta es la 0
+            while not spades.todos_apostaron(juego):
+                juego = pedir_apuestas(juego)
+                gamelib.say(f"Turno finalizado!\nPresionar OK para continuar")
+            juego = spades.avanzar_vuelta(juego) #Se avanza a la vuelta 1 (primera)
+
+        if len(juego.ronda.vuelta.cartas_puestas) == len(juego.jugadores): #Si todos jugaron sus cartas
+                juego = spades.juego_actualizar(juego)
+
         ev = gamelib.wait()
 
         if not ev:
@@ -117,18 +139,13 @@ def main():
         if ev.type == gamelib.EventType.ButtonPress:
             # El usuario presionó un botón del mouse
             x, y = ev.x, ev.y # averiguamos la posición donde se hizo click
-            
-            if not juego.ronda.vuelta.numero_vuelta: #Si la vuelta es la 0
-                juego = pedir_apuestas(juego)
-                gamelib.say(f"Turno finalizado!\nPresionar OK para continuar")
-                if spades.todos_apostaron(juego):
-                    juego = spades.avanzar_vuelta(juego) #Se avanza a la vuelta 1 (primera)
 
-            elif interfaz_grafica.posicion_valida(x, y, juego): #Se selecciono una carta valida
+            if interfaz_grafica.posicion_valida(x, y, juego): #Se selecciono una carta valida
                 carta = interfaz_grafica.carta_seleccionada(x, y, juego)
                 juego = spades.tirar_carta(juego, carta)
+                sound.click(sound.POSICION_CORRECTA)
 
-            if len(juego.ronda.vuelta.cartas_puestas) == len(juego.jugadores): #Si todos jugaron sus cartas
-                juego = spades.juego_actualizar(juego)
+            else:
+                sound.click(sound.POSICION_INCORRECTA)
 
 gamelib.init(main)
