@@ -10,6 +10,8 @@ def juego_mostrar(juego):
     interfaz_grafica.mostrar_cartas(juego)
     interfaz_grafica.mostrar_puntajes(juego)
     interfaz_grafica.mostrar_turnos(juego)
+    interfaz_grafica.mostrar_bazas(juego)
+    interfaz_grafica.mostrar_apuestas(juego)
 
 def apuesta_valida(juego, numero):
     """
@@ -29,7 +31,6 @@ def apuesta_valida(juego, numero):
 
     if siguiente_turno == primer_jugador: #El turno actual es el ultimo jugador en tirar
         apuestas_totales = 1 #Empiezo en 1 porque el default del jugador sin apostar es -1
-        print("Es el ultimo turno")
         for jugador in juego.jugadores:
             apuestas_totales += juego.jugadores[jugador].apuesta
         if int(numero) + apuestas_totales == juego.ronda.numero_ronda:
@@ -77,8 +78,18 @@ def juego_nuevo():
 
     return jugadores
 
+def terminar_juego(juego):
+    """
+    Recibido un estado de juego, muestra por pantalla el ganador y muestra todas las puntuaciones
+    """
+    puntuaciones = ""
+    for jugador in juego.jugadores:
+        puntuaciones += f"{jugador}: {juego.jugadores[jugador].puntos}\n"
+    ganador = spades.ganador(juego)
+    gamelib.say(f"EL GANADOR ES {ganador}\n{puntuaciones}")
+
 def main():
-    gamelib.title("BAZAS")
+    gamelib.title("SPADES")
     juego = spades.crear_juego(juego_nuevo())
     gamelib.resize(interfaz_grafica.ANCHO_VENTANA, interfaz_grafica.
         ALTO_VENTANA)
@@ -88,6 +99,10 @@ def main():
         gamelib.draw_begin()
         juego_mostrar(juego)
         gamelib.draw_end()
+
+        if spades.juego_terminado(juego):
+            terminar_juego(juego)
+            juego = spades.crear_juego(juego_nuevo())
 
         ev = gamelib.wait()
 
@@ -111,10 +126,9 @@ def main():
 
             elif interfaz_grafica.posicion_valida(x, y, juego): #Se selecciono una carta valida
                 carta = interfaz_grafica.carta_seleccionada(x, y, juego)
-                juego = spades.tirar_carta(carta)
-                print("SI, SELECCIONASTE U NA CARTA VALIDA")
+                juego = spades.tirar_carta(juego, carta)
 
-            elif len(juego.ronda.vuelta.cartas_puestas) == len(juego.jugadores):
+            if len(juego.ronda.vuelta.cartas_puestas) == len(juego.jugadores): #Si todos jugaron sus cartas
                 juego = spades.juego_actualizar(juego)
 
 gamelib.init(main)

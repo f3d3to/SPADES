@@ -49,6 +49,16 @@ def mostrar_turnos(juego):
     gamelib.draw_text(f"Turno actual: {turno_actual}", x, y_texto_actual, size=tamaño_letra, fill=COLOR_TEXTO, anchor="w")
     gamelib.draw_text(f"Turno siguiente: {turno_siguiente}", x, y_texto_siguiente, size=tamaño_letra, fill=COLOR_TEXTO, anchor="w")
 
+def mostrar_bazas(juego):
+    """
+    Recibido un estado de juego muestra por pantalla las bazas de cada jugador
+    """
+
+def mostrar_apuestas(juego):
+    """
+    Recibido un estado de juego muestra por pantalla las apuestas de cada jugador
+    """
+
 def sel_img_carta(carta):
     """
     Recibe una carta y devuelve su imagen (la ubicacion en str).
@@ -136,7 +146,15 @@ def dibujar_carta_triunfo(juego):
     """
     if juego.ronda.no_hay_carta_triunfo():
         return
-    dibujar_carta(juego.ronda.carta_triunfo)
+
+    x = ANCHO_VENTANA - ANCHO_CARTA
+    y = ALTO_VENTANA - ALTO_CARTA
+    dibujar_carta(juego.ronda.carta_triunfo, x, y)
+
+    y_texto = y - SEPARACION_TEXTOS
+    x_texto = ANCHO_VENTANA - (ANCHO_CARTA//2)
+    tamaño_letra = SEPARACION_TEXTOS // 4 * 3
+    gamelib.draw_text(f"TRIUNFO", x_texto, y_texto, size=tamaño_letra, fill=COLOR_TEXTO, anchor="center")
 
 def dibujar_cartas_mesa(juego):
     """

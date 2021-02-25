@@ -116,9 +116,31 @@ class Carta:
 		self.palo = palo
 		self.numero = numero
 
-	def comparar(self, carta_triunfo, lista_de_cartas):
-		"""decide la ganadora"""
-		pass
+	def es_mayor(self, otra):
+		"""
+		Recibida otra carta, devuelve True si self > otra y False si self < otra (hablando de los numeros ordenados segun a lista global CARTAS)
+		"""
+		i_self = 0
+		i_otra = 0
+		for i in range(len(CARTAS)):
+			if self.numero == CARTAS[i]:
+				i_self = i
+			if otra.numero == CARTAS[i]:
+				i_otra = i
+			if i_self != 0 and i_otra != 0: #Para que no siga iterando si ya encontro las cartas
+				return i_self > i_otra
+
+	def __eq__(self, otra):
+		"""
+		Dos cartas son iguales si tienen el mismo palo y el mismo numero
+		"""
+		return self.palo == otra.palo and self.numero == otra.numero
+
+	def mismo_palo(self, otra):
+		"""
+		Recibe otra carta del mismo tipo, devuelve True si son del mismo palo, False si son distinto.
+		"""
+		return self.palo == otra.palo
 		
 class Ronda:
 	def __init__(self):
@@ -126,7 +148,7 @@ class Ronda:
 		self.carta_triunfo = -1
 		self.vuelta = Vuelta()
 
-	def carta_triunfo(self, carta_triunfo):
+	def asignar_carta_triunfo(self, carta_triunfo):
 		"""
 		Recibe una carta y la asigna a la carta triunfo
 		"""
@@ -227,7 +249,7 @@ def avanzar_ronda(juego):
 	
 	juego.ronda.avanzar()
 
-	juego.primer_jugador = juego.siguiente_turno[primer_jugador] #Cambia al primer jugador de la ronda
+	juego.primer_jugador = juego.siguiente_turno[juego.primer_jugador] #Cambia al primer jugador de la ronda
 
 	juego, mazo_sobrante = repartir_cartas(juego, mazo_completo())
 
@@ -261,9 +283,10 @@ def tirar_carta(juego, carta):
 	Pone la carta en mesa del jugador, cambia turno y saca dicha carta de la mano del jugador.
 	Precondicion: la carta debe estar en la mano del jugador del turno actual. 
 	"""
-	turno = juego.turno_actual
-	juego.jugadores[turno].mano.remove(carta)
-	juego.vuelta.agregar_carta_mesa(carta, turno)
+	turno_actual = juego.turno_actual
+	juego.jugadores[turno_actual].mano.remove(carta)
+	juego.ronda.vuelta.agregar_carta_mesa(carta, turno_actual)
+	juego.turno_actual = juego.siguiente_turno[turno_actual]
 
 	return juego
 
@@ -272,7 +295,8 @@ def carta_triunfo(juego, mazo):
 	Recibido un estado de juego y un mazo sobrante (lista de Cartas), saca una al azar y actualiza la carta triunfo del estado de juego
 	"""
 	i_carta = randrange(len(mazo))
-	juego.ronda.carta_triunfo(mazo[i_carta])
+	carta = mazo[i_carta]
+	juego.ronda.asignar_carta_triunfo(carta)
 	return juego
 
 def pedir_apuesta(juego, apuesta):
@@ -319,35 +343,82 @@ def verificar_puntuaciones(juego):
 				juego.jugadores[jugador].puntos += 5 * ronda
 	return juego
 
+def juego_terminado(juego):
+	"""
+	Recibido un estado de juego, devuelve True si el juego esta terminado, False si no.
+	"""
+	return juego.ronda.numero_ronda == 14
+
+def ganador(juego):
+	"""
+	Recibido un estado de juego, devuelve el jugador ganador.
+	"""
+	jugador_ganador = juego.turno_actual #Empiezo con un turno ganado
+
+	for jugador in juego.jugadores:
+		if juego.jugadores[jugador].puntos > juego.jugadores[jugador_ganador].puntos:
+			jugador_ganador = jugador
+	return jugador
+
+def tiene_carta_mesa(juego):
+	"""
+	Recibido un estado de juego, devuelve True si el jugador del turno actual tiene una carta del mismo palo que el palo de carta de apertura en su mano. False en caso contrario
+	"""
+	turno_actual = juego.turno_actual
+	for carta in juego.jugadores[turno_actual].mano:
+		if carta.palo == juego.ronda.vuelta.carta_mesa.palo:
+			return True
+	return False
+
+def tiene_carta_triunfo(juego):
+	"""
+	Recibido un estado de juego, devuelve True si el jugador del turno actual tiene una carta del palo triunfo, False en caso contrario.
+	"""
+	turno_actual = juego.turno_actual
+	for carta in juego.jugadores[turno_actual].mano:
+		if carta.palo == juego.ronda.carta_triunfo.palo:
+			return True
+	return False
+
 def carta_valida(juego, carta):
 	"""
 	Recibido un estado de juego y una carta, devuelve True si la carta es valida para tirar, False si no lo es.
 	"""
-	if juego.primer_jugador == juego.turno_actual: #Si es el primero en tirar
+	turno_actual = juego.turno_actual
+	n_cartas_mano = len(juego.jugadores[turno_actual].mano)
+	if juego.primer_jugador == juego.turno_actual or n_cartas_mano == 1: #Si es el primero en tirar
 		return True
 
-	#if juego.ronda.vuelta.carta_mesa.palo 
-	pass
+	if not carta.mismo_palo(juego.ronda.vuelta.carta_mesa) and not tiene_carta_mesa(juego):
+		if not carta.mismo_palo(juego.ronda.carta_triunfo) and not tiene_carta_triunfo(juego):
+			return True
+
+	return False
 
 def le_gana(juego, carta1, carta2):
 	"""
 	Recibido un estado de juego y dos cartas las compara, si carta1 es mayor a carta2 devuelve True, sino devuelve False
-	Aclaracion: existe la posibilidad que la carta sea la misma (ya que puede coincidir con el caso base), en ese caso devuelve false.
+	Aclaracion: existe la posibilidad que la carta sea la misma (ya que puede coincidir con el caso base en determinar_ganador_mano), en ese caso devuelve false.
 	"""
 	if carta1 == carta2:
 		return False
 
+	palo_triunfo = juego.ronda.carta_triunfo.palo
+	palo_apertura = juego.ronda.vuelta.carta_mesa.palo
 
+	if carta1.palo == palo_triunfo:
+		if carta2.palo == palo_triunfo:
+			return carta1.es_mayor(carta2)
+		else:
+			return False
 
-	#return carta_mayor
-	pass
 
 def determinar_ganador_mano(juego):
 	"""
 	Recibido un estado de juego, determina quien fue el ganador de la mano.
 	Devuelve el nombre del jugador.
 	"""
-	jugador_ganador = juego.jugadores.turno_actual
+	jugador_ganador = juego.turno_actual
 	carta_ganadora = juego.ronda.vuelta.cartas_puestas[jugador_ganador]
 
 	for jugador in juego.ronda.vuelta.cartas_puestas:
@@ -356,4 +427,4 @@ def determinar_ganador_mano(juego):
 			carta_ganadora = carta
 			jugador_ganador = jugador
 
-	return jugador
+	return jugador_ganador
