@@ -1,6 +1,8 @@
 # SPADES
 Create for educational proposities. F.I.U.B.A.
 
+# Reglas
+
 ## Comienzo de Juego
 
 El juego de bazas puede jugarse de 2 a 4 jugadores, con naipes franceses, y consta de 13 rondas. En cada ronda, se le reparte a cada jugador una cantidad de cartas igual al número de ronda que se está jugando. En las rondas 1 a 12, luego de repartir las cartas, de develará la primer carta remanente del mazo y el palo de la misma será el palo del triunfo. En la ronda 13, el palo del triunfo es siempre Corazones.
@@ -28,11 +30,19 @@ El orden de las cartas va dado según su numeración, salvo por el 1. De manera 
 ## Puntaje
 
 Al finalizar la ronda, se deben contabilizar los puntos ganados por cada jugador. Cada jugador ganará 10 puntos si adivinó el número exacto de bazas que se iba a llevar. Además, los jugadores que hubieran acertado en su previsión se llevarán 5 puntos por cada baza ganada en esa mano. Si un jugador apuestas que va a ganar 0 bazas, el mismo se llevará (además de los 10 puntos ya mencionados) 5 puntos multiplicado por el número de ronda que se haya jugado.
-Ganar el Juego
+
+## Ganar el Juego
 
 Al finalizar la 12va ronda, el jugador con mayor puntaje, gana.
 Requerimientos del TP
 
+* El juego de Bazas debe poder ser jugado desde una computadora a través de una interfaz gráfica utilizando Gamelib.
+
+* En el turno de cada jugador, se mostrarán únicamente las cartas del jugador actual (mostrando la parte de atrás de las de los demás jugadores que no les corresponda jugar).
+
+La única diferencia con el juego real, es que al elegir las cartas para jugar cada mano, se irá de un jugador por vez en vez de todos al mismo tiempo (debido a limitaciones de mostrar todo en la misma pantalla).
+
+# Requerimientos del TP
 * El juego de Bazas debe poder ser jugado desde una computadora a través de una interfaz gráfica utilizando Gamelib.
 
 * En el turno de cada jugador, se mostrarán únicamente las cartas del jugador actual (mostrando la parte de atrás de las de los demás jugadores que no les corresponda jugar).
