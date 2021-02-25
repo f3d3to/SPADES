@@ -9,7 +9,7 @@ ANCHO_CARTA = 103
 ALTO_CARTA = 138
 INICIO_UBICACION_CARTAS = (ANCHO_VENTANA - 14 * (ANCHO_CARTA/2)) // 2 #14 y no 13, para que quede centrada ya que la ultima carta se ve completa
 SEPARACION_TEXTOS = 20
-COLOR_TEXTO = "cyan"
+COLOR_TEXTO = "lime green"
 
 RUTA_PALO = {"D": "Diamond", "C": "Hearts", "P": "Spades", "T": "Clubs"}
 
@@ -43,7 +43,7 @@ def mostrar_turnos(juego):
     turno_actual = juego.turno_actual
     turno_siguiente = juego.siguiente_turno[turno_actual]
     y_texto_actual = ALTO_VENTANA - ALTO_CARTA - SEPARACION_TEXTOS * 2 - tamaño_letra
-    y_texto_siguiente = y_texto_actual + SEPARACION_TEXTOS
+    y_texto_siguiente = y_texto_actual + SEPARACION_TEXTOS * 2
     x = ALTO_CARTA + SEPARACION_TEXTOS
 
     gamelib.draw_text(f"Turno actual: {turno_actual}", x, y_texto_actual, size=tamaño_letra, fill=COLOR_TEXTO, anchor="w")

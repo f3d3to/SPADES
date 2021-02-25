@@ -1,6 +1,6 @@
 PALOS = "D", "C", "P", "T" 
 CARTAS = 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", 1
-RONDA_FINAL = 13
+RONDA_FINAL = 12
 
 import gamelib
 from random import randrange
@@ -102,11 +102,11 @@ class Juego:
 
 	def siguiente_ronda(self):
 		"""
-		Avanza a la siguiente ronda, devuelve el estado de juego.
+		Avanza a la siguiente ronda.
 		"""
-		self.primer_jugador = self.siguiente_turno[primer_jugador]
+		self.primer_jugador = self.siguiente_turno[self.primer_jugador]
+		self.turno_actual = self.primer_jugador
 		self.ronda.avanzar()
-		return juego
 
 class Carta:
 	def __init__(self, numero=None, palo=None):
@@ -268,9 +268,7 @@ def avanzar_ronda(juego):
 	
 	juego = bazas_a_0(juego)
 
-	juego.ronda.avanzar()
-
-	juego.primer_jugador = juego.siguiente_turno[juego.primer_jugador] #Cambia al primer jugador de la ronda
+	juego.siguiente_ronda()
 
 	juego, mazo_sobrante = repartir_cartas(juego, mazo_completo())
 
@@ -371,7 +369,7 @@ def juego_terminado(juego):
 	"""
 	Recibido un estado de juego, devuelve True si el juego esta terminado, False si no.
 	"""
-	return juego.ronda.numero_ronda == 14
+	return juego.ronda.numero_ronda == RONDA_FINAL + 1
 
 def ganador(juego):
 	"""

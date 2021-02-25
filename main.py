@@ -35,7 +35,6 @@ def apuesta_valida(juego, numero):
         for jugador in juego.jugadores:
             apuestas_totales += juego.jugadores[jugador].apuesta
         if int(numero) + apuestas_totales == juego.ronda.numero_ronda:
-            print(f"EL NUMERO RONDA ES {juego.ronda.numero_ronda}, y las apuestas totales {apuestas_totales}")
             gamelib.say("Error, las apuestas totales no pueden coincidir con el numero de ronda.")
             return False
 
